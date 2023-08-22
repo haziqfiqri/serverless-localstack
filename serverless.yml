@@ -1,0 +1,42 @@
+service: localstack-demo
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: local
+  region: us-east-1
+
+plugins:
+  - serverless-localstack
+
+custom:
+  localstack:
+    stages:
+      - local
+    host: http://localhost
+    autostart: false
+    lambda:
+      mountCode: false
+
+functions:
+  orderCallback:
+    handler: handler.orderCallback
+    environment:
+      AP_QUEUE_URL:
+        Ref: ApQueue
+    events:
+      - http:
+          path: order_callback
+          method: post
+
+resources:
+  Resources:
+    ApQueue:
+      Type: AWS::SQS::Queue
+      Properties: {}
+
+  Outputs:
+    ApQueueUrl:
+      Description: "URL of the ApQueue SQS queue"
+      Value:
+        Ref: ApQueue

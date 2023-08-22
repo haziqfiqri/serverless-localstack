@@ -1,0 +1,26 @@
+{
+  "name": "harkenorc",
+  "version": "1.0.0",
+  "description": "harkenorc lambda",
+  "main": "handler.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.1435.0"
+  },
+  "devDependencies": {
+    "aws-sdk-mock": "^5.8.0",
+    "jest": "^29.6.3",
+    "serverless-localstack": "^1.1.1"
+  }
+}
