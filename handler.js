@@ -1,13 +1,15 @@
 const AWS = require("aws-sdk");
 
-const config = {
-  region: "us-east-1",
-  endpoint: "http://host.docker.internal:4566",
-};
-
-const sqs = new AWS.SQS(config);
-
 module.exports.orderCallback = async (event) => {
+  if (process.env.ENVIRONMENT === "local") {
+    AWS.config.update({
+      region: process.env.REGION,
+      endpoint: "http://host.docker.internal:4566",
+    });
+  }
+
+  const sqs = new AWS.SQS();
+
   try {
     const body = JSON.parse(event.body);
     const eventType = body.eventType;
@@ -20,25 +22,23 @@ module.exports.orderCallback = async (event) => {
       ORDER_CALLBACK: process.env.AP_QUEUE_URL,
     };
 
-    const queueUrl = eventQueueMapping[eventType];
+    let queueUrl = eventQueueMapping[eventType];
 
     if (!queueUrl) {
       throw new Error("Event type does not correspond to queue URL.");
     }
 
-    const updateQueueUrl = queueUrl.replace(
-      "localhost",
-      "host.docker.internal"
-    );
+    if (process.env.ENVIRONMENT === "local") {
+      queueUrl = queueUrl.replace("localhost", "host.docker.internal");
+    }
 
-    const result = await sqs
+    await sqs
       .sendMessage({
         MessageBody: JSON.stringify(body.data),
-        QueueUrl: updateQueueUrl,
+        QueueUrl: queueUrl,
       })
       .promise();
 
-    console.log("Message sent:", result.MessageId);
     return {
       statusCode: 200,
       body: JSON.stringify({
@@ -46,7 +46,6 @@ module.exports.orderCallback = async (event) => {
       }),
     };
   } catch (err) {
-    console.error("Failed sending message to SQS.", err);
     return {
       statusCode: 500,
       body: JSON.stringify({

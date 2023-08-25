@@ -1,10 +1,10 @@
-service: localstack-demo
+service: harkenorc
 
 provider:
   name: aws
   runtime: nodejs18.x
-  stage: local
-  region: us-east-1
+  stage: ${opt:stage, 'local'}
+  region: ${opt:region, 'us-east-1'}
 
 plugins:
   - serverless-localstack
@@ -22,6 +22,8 @@ functions:
   orderCallback:
     handler: handler.orderCallback
     environment:
+      ENVIRONMENT: ${self:provider.stage}
+      REGION: ${self:provider.region}
       AP_QUEUE_URL:
         Ref: ApQueue
     events:
@@ -30,13 +32,18 @@ functions:
           method: post
 
 resources:
+  Conditions:
+    IsLocal: !Equals ["${self:provider.stage}", "local"]
+
   Resources:
     ApQueue:
       Type: AWS::SQS::Queue
+      Condition: IsLocal
       Properties: {}
 
   Outputs:
     ApQueueUrl:
       Description: "URL of the ApQueue SQS queue"
+      Condition: IsLocal
       Value:
         Ref: ApQueue

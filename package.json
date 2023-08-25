@@ -4,13 +4,10 @@
   "description": "harkenorc lambda",
   "main": "handler.js",
   "directories": {
-    "test": "tests"
+    "test": "__tests__"
   },
   "scripts": {
     "test": "jest"
-  },
-  "jest": {
-    "testEnvironment": "node"
   },
   "keywords": [],
   "author": "",
