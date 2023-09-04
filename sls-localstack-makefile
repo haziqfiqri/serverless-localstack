@@ -1,0 +1,19 @@
+docker-up:
+	docker-compose -f sls-localstack-docker-compose.yml up -d
+	npm install
+
+sls-deploy-local:
+	npm install -g serverless
+	serverless deploy --config sls-localstack-serverless.yml --stage local --region us-east-1
+
+update-jest-config:
+	@QUEUE_URL=$(shell aws --endpoint-url=http://localhost:4566 sqs list-queues --query 'QueueUrls[0]' --output text) && \
+	QUEUE_ID=$$(echo $$QUEUE_URL | awk -F'-' '{print $$NF}') && \
+	sed -i 's/harkenorc-local-ApQueue-[a-f0-9]*/harkenorc-local-ApQueue-'$$QUEUE_ID'/' jest.config.js
+
+sls-test-local: update-jest-config
+	npm run test
+
+docker-down: 
+	docker-compose -f sls-localstack-docker-compose.yml down
+
