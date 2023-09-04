@@ -1,12 +1,3 @@
-![HarkenOrc](https://i.ibb.co/bRSBJ7N/c0de2c34-667e-4add-b36c-6f249281eee2.png)
-
-**Harken Orc Lambda**
-
-This Lambda function handles order callbacks by processing incoming events and forwarding them to the appropriate Simple Queue Service (SQS) queue. The verb "harken" means to listen attentively or to pay close attention to something. It has an old-fashioned, poetic feel to it. So in the context of the repository names, "HarkenOrc" was meant to evoke an image of an orc listening closely or paying careful attention for a callback or signal.
-&nbsp;
-
----
-
 ## Project Pre-Requisite
 
 There are some pre-requisite tools needed to run this project.
